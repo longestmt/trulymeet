@@ -1,42 +1,74 @@
-# sv
+# TrulyMeet
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+TrulyMeet is a free, open-source group scheduling tool designed as a modern replacement for When2Meet. It is built to be fast, private, and simple to use without requiring user accounts or tracking.
 
-## Creating a project
+![TrulyMeet Homepage](./static/docs/homepage.png)
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Features
 
-```sh
-# create a new project
-npx sv create my-app
+- **No Accounts Required**: Jump right in, pick your candidate dates, and share a link.
+- **Privacy First**: We don't track you. Event details are ephemeral.
+- **Modern Interface**: A clean, responsive design that works beautifully perfectly on desktop and mobile.
+- **Dark, Light, and AMOLED Themes**: Beautiful built-in themes out-of-the-box (using the [Compline](https://github.com/jblais493/compline) palette).
+- **Timezone Aware**: Automatically detects timezones to prevent scheduling confusion across regions.
+
+### Finding a Time
+
+Participants get a simple, continuous grid on desktop and a smooth day-by-day swipe interface on mobile to select their availability.
+
+![TrulyMeet Availability Grid](./static/docs/availability.png)
+
+Features include:
+- Auto-save with debouncing to never lose progress.
+- Multi-day copy and "Select all" / "Clear" features for quick filling.
+- Real-time updates via Server-Sent Events (SSE) see when others join the event and add their availability instantly.
+- "Maybe" support for flexible scheduling.
+- A "Group Results" tab that shows a heat map and automatically calculates the best times for everyone.
+
+## Tech Stack
+
+TrulyMeet is built using a modern open-source stack:
+- **Framework**: [SvelteKit](https://kit.svelte.dev/) (with Svelte 5 runes)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
+- **Styling**: Vanilla CSS with custom properties (CSS variables) for lightweight, dependency-free theming.
+
+## Development Setup
+
+1. Clone the repository and install dependencies:
+```bash
+git clone https://github.com/longestmt/trulymeet.git
+cd trulymeet
+npm install
 ```
 
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.12.5 create --template minimal --types ts --install npm ./
+2. Set up a local PostgreSQL database. You can use Docker:
+```bash
+docker run -d --name trulymeet-db -e POSTGRES_USER=trulymeet -e POSTGRES_PASSWORD=trulymeet -e POSTGRES_DB=trulymeet -p 5432:5432 postgres:16-alpine
 ```
 
-## Developing
+3. Copy the example environment file and update it with your database URL:
+```bash
+cp .env.example .env
+# Edit .env and set DATABASE_URL=postgres://trulymeet:trulymeet@localhost:5432/trulymeet
+```
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+4. Push the database schema:
+```bash
+npx drizzle-kit push
+```
 
-```sh
+5. Start the development server:
+```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+Visit `http://localhost:5199` in your browser.
 
-To create a production version of your app:
+## Deployment
 
-```sh
-npm run build
-```
+TrulyMeet includes a multi-stage `Dockerfile` and a `docker-compose.yml` for easy self-hosting alongside a Caddy reverse proxy for automatic HTTPS. See the compose file for volume and networking configuration.
 
-You can preview the production build with `npm run preview`.
+## License
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+This project is licensed under the AGPL-3.0 License.
