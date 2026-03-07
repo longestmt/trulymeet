@@ -1,0 +1,92 @@
+{
+    "app": {
+        "name": "TrulyMeet",
+        "tagline": "Find a time. No accounts. No tracking.",
+        "description": "Free, open-source group scheduling. A modern When2Meet replacement."
+    },
+    "nav": {
+        "createEvent": "New Event",
+        "theme": {
+            "compline": "Dark",
+            "lauds": "Light",
+            "vigil": "AMOLED"
+        }
+    },
+    "event": {
+        "create": {
+            "title": "Create Event",
+            "titleLabel": "Event title",
+            "titlePlaceholder": "e.g., Team standup, Study group, Pizza night",
+            "descriptionLabel": "Description (optional)",
+            "descriptionPlaceholder": "Add any context for participants...",
+            "datesLabel": "Pick candidate dates",
+            "datesHint": "Tap dates on the calendar",
+            "timeWindowLabel": "Time window",
+            "startTimeLabel": "Start time",
+            "endTimeLabel": "End time",
+            "granularityLabel": "Time slots",
+            "granularity15": "15 min",
+            "granularity30": "30 min",
+            "granularity60": "1 hour",
+            "timezoneLabel": "Timezone",
+            "passwordLabel": "Event password (optional)",
+            "passwordPlaceholder": "Leave empty for no password",
+            "allowMaybeLabel": "Allow \"maybe\" responses",
+            "submit": "Create Event",
+            "creating": "Creating..."
+        },
+        "created": {
+            "title": "Event created!",
+            "shareLinkLabel": "Share this link with participants:",
+            "adminLinkLabel": "Admin link (save this!):",
+            "adminWarning": "This is the only way to edit or delete your event. Bookmark it or save it somewhere safe.",
+            "copyLink": "Copy link",
+            "copied": "Copied!",
+            "qrCodeAlt": "QR code for event link",
+            "createAnother": "Create another event"
+        },
+        "join": {
+            "nameLabel": "Your display name",
+            "namePlaceholder": "Enter your name",
+            "passwordLabel": "Event password",
+            "passwordPlaceholder": "Enter the event password",
+            "unlock": "Unlock",
+            "wrongPassword": "Wrong password. Try again."
+        },
+        "availability": {
+            "tabYours": "Your Availability",
+            "tabResults": "Group Results",
+            "selectAll": "Select all",
+            "clearDay": "Clear day",
+            "copyToOther": "Copy to other days",
+            "rangeSelect": "Range select",
+            "saved": "Saved",
+            "saving": "Saving...",
+            "undo": "Undo",
+            "redo": "Redo",
+            "available": "Available",
+            "maybe": "Maybe",
+            "unavailable": "Unavailable"
+        },
+        "results": {
+            "bestTimes": "Best times",
+            "showGrid": "Show grid",
+            "hideGrid": "Hide grid",
+            "participants": "Participants",
+            "ofAvailable": "{count} of {total} available",
+            "noResponses": "No responses yet. Share the link to get started!"
+        },
+        "admin": {
+            "lockEvent": "Lock event",
+            "unlockEvent": "Unlock event",
+            "deleteResponse": "Delete response",
+            "deleteEvent": "Delete event",
+            "locked": "This event is locked. No new responses can be submitted."
+        }
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "Something went wrong",
+        "retry": "Try again"
+    }
+}

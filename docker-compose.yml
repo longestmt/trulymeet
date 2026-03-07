@@ -1,0 +1,48 @@
+services:
+  trulymeet:
+    build: .
+    environment:
+      DATABASE_URL: postgres://trulymeet:trulymeet@db:5432/trulymeet
+      BASE_URL: https://meet.example.com
+      EVENT_RETENTION_DAYS: 30
+      RATE_LIMIT_EVENTS_PER_HOUR: 10
+      RATE_LIMIT_SUBMISSIONS_PER_HOUR: 60
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: trulymeet
+      POSTGRES_PASSWORD: trulymeet
+      POSTGRES_DB: trulymeet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trulymeet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - trulymeet
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

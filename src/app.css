@@ -1,0 +1,418 @@
+/* ═══════════════════════════════════════════════════════════
+   TrulyMeet — Global Styles & Theme System
+   
+   Three themes, all using Compline palette:
+   - Compline (dark, default)
+   - Lauds (light)
+   - Vigil (AMOLED black)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── Reset ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+/* ─── Compline (Dark — Default) ───────────────────────────── */
+:root,
+[data-theme='compline'] {
+	/* Surfaces */
+	--bg-primary: #1a1d21;
+	--bg-surface: #22262b;
+	--bg-elevated: #2a2e34;
+	--bg-hover: #31363d;
+
+	/* Text */
+	--fg-primary: #f0efeb;
+	--fg-secondary: #ccc4b4;
+	--fg-muted: #9a9791;
+
+	/* Borders */
+	--border-default: #515761;
+	--border-subtle: #3d424a;
+
+	/* Selection */
+	--selection-bg: #3d424a;
+	--selection-fg: #f0efeb;
+
+	/* Accent colors (from Compline palette) */
+	--accent-red: #cdacac;
+	--accent-green: #b8c4b8;
+	--accent-yellow: #d4ccb4;
+	--accent-blue: #b4bcc4;
+	--accent-magenta: #ccc4b4;
+	--accent-cyan: #b4c0c8;
+
+	/* Semantic: Availability */
+	--avail-yes: #8aad8a;
+	--avail-yes-bg: rgba(138, 173, 138, 0.2);
+	--avail-maybe: #c4aa60;
+	--avail-maybe-bg: rgba(196, 170, 96, 0.15);
+	--avail-no: transparent;
+	--avail-no-bg: var(--bg-surface);
+
+	/* Semantic: UI states */
+	--interactive: var(--accent-blue);
+	--interactive-hover: #c4ccd4;
+	--destructive: var(--accent-red);
+	--success: var(--accent-green);
+	--warning: var(--accent-yellow);
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+	/* Radii */
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 16px;
+	--radius-full: 9999px;
+
+	/* Transitions */
+	--transition-fast: 150ms ease;
+	--transition-normal: 250ms ease;
+
+	/* Focus ring */
+	--focus-ring: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent-blue);
+
+	/* Color scheme for native elements */
+	color-scheme: dark;
+}
+
+/* ─── Lauds (Light) ───────────────────────────────────────── */
+[data-theme='lauds'] {
+	--bg-primary: #f0efeb;
+	--bg-surface: #e8e5df;
+	--bg-elevated: #ffffff;
+	--bg-hover: #ddd9d2;
+
+	--fg-primary: #1a1d21;
+	--fg-secondary: #4a4d51;
+	--fg-muted: #7a7872;
+
+	--border-default: #c4c0b8;
+	--border-subtle: #d8d4cc;
+
+	--selection-bg: #2d2a27;
+	--selection-fg: #f0efeb;
+
+	--accent-red: #8b6666;
+	--accent-green: #5a6b5a;
+	--accent-yellow: #8b7e52;
+	--accent-blue: #5a6b7a;
+	--accent-magenta: #7a6d5a;
+	--accent-cyan: #64757d;
+
+	--avail-yes: #4a7a4a;
+	--avail-yes-bg: rgba(74, 122, 74, 0.15);
+	--avail-maybe: #9a8030;
+	--avail-maybe-bg: rgba(154, 128, 48, 0.12);
+	--avail-no: transparent;
+	--avail-no-bg: var(--bg-surface);
+
+	--interactive: var(--accent-blue);
+	--interactive-hover: #4a5b6a;
+	--destructive: var(--accent-red);
+	--success: var(--accent-green);
+	--warning: var(--accent-yellow);
+
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+	color-scheme: light;
+}
+
+/* ─── Vigil (AMOLED Black) ────────────────────────────────── */
+[data-theme='vigil'] {
+	--bg-primary: #000000;
+	--bg-surface: #0a0a0a;
+	--bg-elevated: #111111;
+	--bg-hover: #191919;
+
+	--fg-primary: #e8e8e8;
+	--fg-secondary: #b0b0b0;
+	--fg-muted: #707070;
+
+	--border-default: #222222;
+	--border-subtle: #1a1a1a;
+
+	--selection-bg: #222222;
+	--selection-fg: #e8e8e8;
+
+	/* Compline accents boosted +10-15% luminance for contrast on black */
+	--accent-red: #d9b8b8;
+	--accent-green: #c4d0c4;
+	--accent-yellow: #e0d8c0;
+	--accent-blue: #c0c8d0;
+	--accent-magenta: #d8d0c0;
+	--accent-cyan: #c0ccd4;
+
+	--avail-yes: #90b890;
+	--avail-yes-bg: rgba(144, 184, 144, 0.15);
+	--avail-maybe: #c8aa58;
+	--avail-maybe-bg: rgba(200, 170, 88, 0.12);
+	--avail-no: transparent;
+	--avail-no-bg: var(--bg-surface);
+
+	--interactive: var(--accent-blue);
+	--interactive-hover: #d0d8e0;
+	--destructive: var(--accent-red);
+	--success: var(--accent-green);
+	--warning: var(--accent-yellow);
+
+	/* No shadows on AMOLED — use borders only */
+	--shadow-sm: none;
+	--shadow-md: none;
+	--shadow-lg: none;
+
+	color-scheme: dark;
+}
+
+/* ─── Global Styles ───────────────────────────────────────── */
+html {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+		Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background-color: var(--bg-primary);
+	color: var(--fg-primary);
+	line-height: 1.6;
+	font-size: 16px;
+	transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+body {
+	min-height: 100vh;
+	background-color: var(--bg-primary);
+}
+
+::selection {
+	background-color: var(--selection-bg);
+	color: var(--selection-fg);
+}
+
+/* ─── Typography ──────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+	line-height: 1.3;
+	font-weight: 600;
+	color: var(--fg-primary);
+}
+
+h1 {
+	font-size: 2rem;
+	letter-spacing: -0.02em;
+}
+
+h2 {
+	font-size: 1.5rem;
+	letter-spacing: -0.01em;
+}
+
+h3 {
+	font-size: 1.25rem;
+}
+
+p {
+	color: var(--fg-secondary);
+}
+
+a {
+	color: var(--interactive);
+	text-decoration: none;
+	transition: color var(--transition-fast);
+}
+
+a:hover {
+	color: var(--interactive-hover);
+}
+
+/* ─── Focus visibility ────────────────────────────────────── */
+:focus-visible {
+	outline: none;
+	box-shadow: var(--focus-ring);
+}
+
+/* ─── Buttons ─────────────────────────────────────────────── */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.625rem 1.25rem;
+	border: 1px solid transparent;
+	border-radius: var(--radius-md);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	font-family: inherit;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	white-space: nowrap;
+	min-height: 44px; /* Touch target */
+	user-select: none;
+}
+
+.btn:active {
+	transform: scale(0.98);
+}
+
+.btn-primary {
+	background-color: var(--interactive);
+	color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+	background-color: var(--interactive-hover);
+}
+
+.btn-secondary {
+	background-color: transparent;
+	color: var(--fg-primary);
+	border-color: var(--border-default);
+}
+
+.btn-secondary:hover {
+	background-color: var(--bg-hover);
+}
+
+.btn-ghost {
+	background-color: transparent;
+	color: var(--fg-secondary);
+}
+
+.btn-ghost:hover {
+	background-color: var(--bg-hover);
+	color: var(--fg-primary);
+}
+
+.btn-sm {
+	padding: 0.375rem 0.75rem;
+	font-size: 0.8125rem;
+	min-height: 36px;
+}
+
+.btn-icon {
+	padding: 0.5rem;
+	min-height: 44px;
+	min-width: 44px;
+}
+
+/* ─── Inputs ──────────────────────────────────────────────── */
+.input {
+	width: 100%;
+	padding: 0.625rem 0.875rem;
+	background-color: var(--bg-surface);
+	color: var(--fg-primary);
+	border: 1px solid var(--border-default);
+	border-radius: var(--radius-md);
+	font-size: 0.9375rem;
+	font-family: inherit;
+	transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+	min-height: 44px;
+}
+
+.input::placeholder {
+	color: var(--fg-muted);
+}
+
+.input:focus {
+	outline: none;
+	border-color: var(--interactive);
+	box-shadow: 0 0 0 3px rgba(180, 188, 196, 0.15);
+}
+
+textarea.input {
+	resize: vertical;
+	min-height: 80px;
+}
+
+select.input {
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239a9791' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.75rem center;
+	padding-right: 2.5rem;
+}
+
+/* ─── Cards ───────────────────────────────────────────────── */
+.card {
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-lg);
+	padding: 1.5rem;
+	box-shadow: var(--shadow-sm);
+}
+
+/* ─── Labels ──────────────────────────────────────────────── */
+.label {
+	display: block;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: var(--fg-secondary);
+	margin-bottom: 0.375rem;
+}
+
+/* ─── Layout utilities ────────────────────────────────────── */
+.container {
+	width: 100%;
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 0 1rem;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+/* ─── Animations ──────────────────────────────────────────── */
+@keyframes fade-in {
+	from { opacity: 0; transform: translateY(4px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-subtle {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.6; }
+}
+
+.animate-fade-in {
+	animation: fade-in var(--transition-normal) ease-out;
+}
+
+/* ─── Reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ─── Responsive breakpoints via container ────────────────── */
+@media (max-width: 640px) {
+	h1 {
+		font-size: 1.5rem;
+	}
+
+	h2 {
+		font-size: 1.25rem;
+	}
+
+	.container {
+		padding: 0 0.75rem;
+	}
+}

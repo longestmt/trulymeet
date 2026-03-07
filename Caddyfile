@@ -1,0 +1,7 @@
+# TrulyMeet Caddyfile
+# Replace meet.example.com with your domain.
+# Caddy automatically provisions HTTPS via Let's Encrypt.
+
+meet.example.com {
+	reverse_proxy trulymeet:3000
+}
