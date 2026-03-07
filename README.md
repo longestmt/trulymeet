@@ -67,7 +67,32 @@ Visit `http://localhost:5199` in your browser.
 
 ## Deployment
 
-TrulyMeet includes a multi-stage `Dockerfile` and a `docker-compose.yml` for easy self-hosting alongside a Caddy reverse proxy for automatic HTTPS. See the compose file for volume and networking configuration.
+TrulyMeet includes a multi-stage `Dockerfile` and a `docker-compose.yml` for easy self-hosting alongside a Caddy reverse proxy for automatic HTTPS.
+
+To deploy using Docker Compose:
+
+1. Clone the repository to your server:
+```bash
+git clone https://github.com/longestmt/trulymeet.git
+cd trulymeet
+```
+
+2. Copy the example environment file and update variables (especially `BASE_URL` and `DATABASE_URL` if you change the default password):
+```bash
+cp .env.example .env
+```
+
+3. Build and start the containers in the background:
+```bash
+docker compose up -d
+```
+
+4. Push the database schema to the new PostgreSQL container:
+```bash
+docker compose exec app npx drizzle-kit push
+```
+
+The app will now be available locally on port `5199`, or via HTTPS if you configured a domain in the `Caddyfile`.
 
 ## License
 
