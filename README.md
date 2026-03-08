@@ -93,7 +93,7 @@ npm install
 npx drizzle-kit push
 ```
 
-The app will now be exposed locally on port `3000`. You can configure your own reverse proxy (like Nginx, Caddy, or Traefik) to route traffic to it and handle HTTPS.
+The app will now be exposed locally on port `3988`. You can configure your own reverse proxy (like Nginx, Caddy, or Traefik) to route traffic to it and handle HTTPS.
 
 ## License
 
