@@ -1,6 +1,6 @@
 services:
-  trulymeet:
-    build: .
+  app:
+    image: ghcr.io/longestmt/trulymeet:latest
     environment:
       DATABASE_URL: postgres://trulymeet:trulymeet@db:5432/trulymeet
       BASE_URL: https://meet.example.com
@@ -23,7 +23,7 @@ services:
       POSTGRES_PASSWORD: trulymeet
       POSTGRES_DB: trulymeet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U trulymeet"]
+      test: [ "CMD-SHELL", "pg_isready -U trulymeet" ]
       interval: 5s
       timeout: 5s
       retries: 5
