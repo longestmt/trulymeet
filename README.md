@@ -67,7 +67,7 @@ Visit `http://localhost:5199` in your browser.
 
 ## Deployment
 
-TrulyMeet includes a `docker-compose.yml` for easy self-hosting alongside a Caddy reverse proxy for automatic HTTPS. It uses the pre-built Docker image hosted on the GitHub Container Registry.
+TrulyMeet includes a `docker-compose.yml` for easy self-hosting. It uses the pre-built Docker image hosted on the GitHub Container Registry.
 
 To deploy using Docker Compose:
 
@@ -93,7 +93,7 @@ npm install
 npx drizzle-kit push
 ```
 
-The app will now be available locally on port `5199`, or via HTTPS if you configured a domain in the `Caddyfile`.
+The app will now be exposed locally on port `3000`. You can configure your own reverse proxy (like Nginx, Caddy, or Traefik) to route traffic to it and handle HTTPS.
 
 ## License
 
