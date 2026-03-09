@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Solid white circle background for high contrast -->
+  <circle cx="50" cy="50" r="48" fill="#ffffff" stroke="#1a1d21" stroke-width="4"/>
+  
+  <!-- Outer ring of the ⊕ symbol -->
+  <circle cx="50" cy="50" r="32" fill="none" stroke="#1a1d21" stroke-width="8"/>
+  
+  <!-- Vertical line -->
+  <line x1="50" y1="18" x2="50" y2="82" stroke="#1a1d21" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- Horizontal line -->
+  <line x1="18" y1="50" x2="82" y2="50" stroke="#1a1d21" stroke-width="8" stroke-linecap="round"/>
+</svg>
