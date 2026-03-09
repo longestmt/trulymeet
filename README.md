@@ -95,6 +95,12 @@ npx drizzle-kit push
 
 The app will now be exposed locally on port `3988`. You can configure your own reverse proxy (like Nginx, Caddy, or Traefik) to route traffic to it and handle HTTPS.
 
+## Support
+
+If you find TrulyMeet useful, consider buying me a coffee!
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/longestmt)
+
 ## License
 
 This project is licensed under the AGPL-3.0 License.

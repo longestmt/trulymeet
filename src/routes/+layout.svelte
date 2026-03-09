@@ -44,6 +44,12 @@
 					target="_blank"
 					rel="noopener">Source code</a
 				>
+				·
+				<a
+					href="https://ko-fi.com/longestmt"
+					target="_blank"
+					rel="noopener">Ko-fi</a
+				>
 				· AGPL-3.0
 			</p>
 		</div>
