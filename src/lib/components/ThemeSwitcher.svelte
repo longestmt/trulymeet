@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { themeStore, type Theme } from '$lib/stores/theme.svelte';
+	import { themeStore, type Theme } from "$lib/stores/theme.svelte";
 
 	const themes: { value: Theme; label: string; icon: string }[] = [
-		{ value: 'compline', label: 'Dark', icon: '🌙' },
-		{ value: 'lauds', label: 'Light', icon: '☀️' },
-		{ value: 'vigil', label: 'AMOLED', icon: '⬛' }
+		{ value: "compline", label: "Dark", icon: "🌙" },
+		{ value: "vigil", label: "AMOLED", icon: "⬛" },
+		{ value: "lauds", label: "Light", icon: "☀️" },
 	];
 </script>
 

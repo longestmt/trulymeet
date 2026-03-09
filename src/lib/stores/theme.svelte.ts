@@ -56,7 +56,7 @@ function createThemeStore() {
             }
         },
         cycle() {
-            const themes: Theme[] = ['compline', 'lauds', 'vigil'];
+            const themes: Theme[] = ['compline', 'vigil', 'lauds'];
             const idx = themes.indexOf(current);
             const next = themes[(idx + 1) % themes.length];
             this.set(next);
