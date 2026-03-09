@@ -8,9 +8,9 @@
 
 ## 1. Overview
 
-TrulyMeet is a free, open-source group scheduling tool that helps multiple people find a common meeting time. It is a modern replacement for When2Meet, built with a mobile-first UI, no accounts, no tracking, and no ads.
+TrulyMeet is a free, open-source group scheduling tool that helps multiple people find a common meeting time. It is built with a mobile-first UI, no accounts, no tracking, and no ads.
 
-The core interaction is unchanged from the When2Meet model — create an event with candidate dates/times, share a link, participants mark their availability on a grid, and the overlap is visualized — but the experience is redesigned from the ground up to work beautifully on phones, feel fast and modern, and respect user privacy.
+The core interaction is simple — create an event with candidate dates/times, share a link, participants mark their availability on a grid, and the overlap is visualized — and the experience is designed from the ground up to work beautifully on phones, feel fast and modern, and respect user privacy.
 
 TrulyMeet is licensed under a copyleft free software license (AGPL-3.0) and is designed to be both self-hostable and deployable as a hosted service.
 
@@ -18,7 +18,7 @@ TrulyMeet is licensed under a copyleft free software license (AGPL-3.0) and is d
 
 ## 2. Problem Statement
 
-When2Meet solves a real problem well — finding group availability without accounts or friction — but its implementation has significant UX shortcomings:
+Legacy scheduling tools solve a real problem well — finding group availability without accounts or friction — but often have significant UX shortcomings:
 
 - **The mobile experience is broken.** The desktop grid is served as-is to mobile browsers. Dragging to select time slots on a small touch screen is imprecise and frustrating. There is no responsive layout.
 - **The visual design is dated.** The interface looks like it was built in the early 2000s (because it was). There is no dark mode, poor contrast, and no visual hierarchy.

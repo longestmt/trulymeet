@@ -2,7 +2,7 @@
     "app": {
         "name": "TrulyMeet",
         "tagline": "Find a time. No accounts. No tracking.",
-        "description": "Free, open-source group scheduling. A modern When2Meet replacement."
+        "description": "Free, open-source group scheduling."
     },
     "nav": {
         "createEvent": "New Event",

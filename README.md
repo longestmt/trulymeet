@@ -1,6 +1,6 @@
 # TrulyMeet
 
-TrulyMeet is a free, open-source group scheduling tool designed as a modern replacement for When2Meet. It is built to be fast, private, and simple to use without requiring user accounts or tracking.
+TrulyMeet is a free, open-source group scheduling tool. It is built to be fast, private, and simple to use without requiring user accounts or tracking.
 
 ![TrulyMeet Homepage](./static/docs/homepage.png)
 
