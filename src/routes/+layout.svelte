@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { themeStore } from '$lib/stores/theme.svelte';
-	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
-	import '../app.css';
+	import { onMount } from "svelte";
+	import { themeStore } from "$lib/stores/theme.svelte";
+	import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
+	import "../app.css";
 
 	let { children } = $props();
 
@@ -12,7 +12,10 @@
 </script>
 
 <svelte:head>
-	<meta name="description" content="TrulyMeet — Free, open-source group scheduling. Find a time. No accounts. No tracking." />
+	<meta
+		name="description"
+		content="TrulyMeet — Free, open-source group scheduling. Find a time. No accounts. No tracking."
+	/>
 	<meta property="og:site_name" content="TrulyMeet" />
 	<meta name="theme-color" content="#1a1d21" />
 </svelte:head>
@@ -36,7 +39,11 @@
 		<div class="container">
 			<p class="footer-text">
 				Free & open-source ·
-				<a href="https://github.com/trulymeet/trulymeet" target="_blank" rel="noopener">Source code</a>
+				<a
+					href="https://github.com/longestmt/trulymeet"
+					target="_blank"
+					rel="noopener">Source code</a
+				>
 				· AGPL-3.0
 			</p>
 		</div>
