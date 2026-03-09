@@ -207,7 +207,6 @@
     }
 
     .calendar-cell {
-        aspect-ratio: 1;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -219,7 +218,7 @@
         font-family: inherit;
         cursor: pointer;
         transition: all var(--transition-fast);
-        min-height: 44px;
+        min-height: 40px;
         position: relative;
     }
 
@@ -260,7 +259,7 @@
 
     @media (max-width: 640px) {
         .calendar-cell {
-            min-height: 48px;
+            min-height: 42px;
             font-size: 0.9375rem;
         }
     }
