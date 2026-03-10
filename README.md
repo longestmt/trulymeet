@@ -79,14 +79,9 @@ curl -o .env https://raw.githubusercontent.com/longestmt/trulymeet/main/.env.exa
 
 2. Edit the `.env` file and update your variables (especially `BASE_URL`, and `DATABASE_URL` if you change the database credentials).
 
-3. Start the containers in the background. This will automatically pull the `ghcr.io/longestmt/trulymeet` image:
+3. Start the containers in the background. This will automatically pull the `ghcr.io/longestmt/trulymeet` image and configure the database schema:
 ```bash
 docker compose up -d
-```
-
-4. Push the database schema using the application container:
-```bash
-docker compose exec app npx drizzle-kit push
 ```
 
 The app will now be exposed locally on port `3988`. You can configure your own reverse proxy (like Nginx, Caddy, or Traefik) to route traffic to it and handle HTTPS.
