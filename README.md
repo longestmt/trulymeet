@@ -71,26 +71,22 @@ TrulyMeet includes a `docker-compose.yml` for easy self-hosting. It uses the pre
 
 To deploy using Docker Compose:
 
-1. Clone the repository to your server:
+1. Download the configuration files to your server:
 ```bash
-git clone https://github.com/longestmt/trulymeet.git
-cd trulymeet
+curl -O https://raw.githubusercontent.com/longestmt/trulymeet/main/docker-compose.yml
+curl -o .env https://raw.githubusercontent.com/longestmt/trulymeet/main/.env.example
 ```
 
-2. Copy the example environment file and update variables (especially `BASE_URL` and `DATABASE_URL` if you change the default password):
-```bash
-cp .env.example .env
-```
+2. Edit the `.env` file and update your variables (especially `BASE_URL`, and `DATABASE_URL` if you change the database credentials).
 
 3. Start the containers in the background. This will automatically pull the `ghcr.io/longestmt/trulymeet` image:
 ```bash
 docker compose up -d
 ```
 
-4. Push the database schema to the new PostgreSQL container (requires Node.js on your host):
+4. Push the database schema using the application container:
 ```bash
-npm install
-npx drizzle-kit push
+docker compose exec app npx drizzle-kit push
 ```
 
 The app will now be exposed locally on port `3988`. You can configure your own reverse proxy (like Nginx, Caddy, or Traefik) to route traffic to it and handle HTTPS.

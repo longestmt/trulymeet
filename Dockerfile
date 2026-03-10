@@ -17,6 +17,8 @@ WORKDIR /app
 COPY --from=build /app/build ./build
 COPY --from=build /app/package.json ./
 COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/drizzle.config.ts ./
+COPY --from=build /app/src/lib/server/db/schema.ts ./src/lib/server/db/schema.ts
 
 ENV NODE_ENV=production
 ENV PORT=3988
