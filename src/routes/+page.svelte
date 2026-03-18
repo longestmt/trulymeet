@@ -35,22 +35,26 @@
 
     // When selectedDates changes, auto-assign new dates to first block
     // and remove stale dates from all blocks
+    import { untrack } from "svelte";
     $effect(() => {
         const dateSet = new Set(selectedDates);
-        // Remove stale dates
-        for (const block of timeBlocks) {
-            block.days = block.days.filter((d) => dateSet.has(d));
-        }
-        // Any new dates not in any block go to the first block
-        const assignedDates = new Set(timeBlocks.flatMap((b) => b.days));
-        const unassigned = selectedDates.filter(
-            (d) => !assignedDates.has(d),
-        );
-        if (unassigned.length > 0 && timeBlocks.length > 0) {
-            timeBlocks[0].days = [
-                ...new Set([...timeBlocks[0].days, ...unassigned]),
-            ].sort();
-        }
+        // Use untrack for timeBlocks to avoid infinite reactivity loop
+        untrack(() => {
+            // Remove stale dates
+            for (const block of timeBlocks) {
+                block.days = block.days.filter((d) => dateSet.has(d));
+            }
+            // Any new dates not in any block go to the first block
+            const assignedDates = new Set(timeBlocks.flatMap((b) => b.days));
+            const unassigned = selectedDates.filter(
+                (d) => !assignedDates.has(d),
+            );
+            if (unassigned.length > 0 && timeBlocks.length > 0) {
+                timeBlocks[0].days = [
+                    ...new Set([...timeBlocks[0].days, ...unassigned]),
+                ].sort();
+            }
+        });
     });
 
     // Helper: get weekday label for a date string
