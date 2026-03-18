@@ -11,6 +11,12 @@
     let slug = $derived($page.params.slug);
 
     // Event data
+    type TimeBlock = {
+        startTime: string;
+        endTime: string;
+        days: string[];
+    };
+
     let event = $state<{
         title: string;
         description: string | null;
@@ -19,6 +25,7 @@
         candidateDates: string[];
         startTime: string;
         endTime: string;
+        timeBlocks: TimeBlock[];
         allowMaybe: boolean;
         locked: boolean;
         hasPassword: boolean;
@@ -156,21 +163,15 @@
         };
     }
 
-    // ─── Time slots generation ───────────────────────────
-    let timeSlots = $derived.by(() => {
-        if (!event) return [];
-
-        const [startH, startM] = event.startTime.split(":").map(Number);
-        const [endH, endM] = event.endTime.split(":").map(Number);
+    // ─── Time slots generation (per-date) ─────────────────
+    function generateSlotsForRange(startTime: string, endTime: string, granularity: number): { label: string; minutes: number }[] {
+        const [startH, startM] = startTime.split(":").map(Number);
+        const [endH, endM] = endTime.split(":").map(Number);
         const startMinutes = startH * 60 + startM;
         const endMinutes = endH * 60 + endM;
         const slots: { label: string; minutes: number }[] = [];
 
-        for (
-            let m = startMinutes;
-            m < endMinutes;
-            m += event.timeGranularityMinutes
-        ) {
+        for (let m = startMinutes; m < endMinutes; m += granularity) {
             const h = Math.floor(m / 60);
             const min = m % 60;
             const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
@@ -182,7 +183,54 @@
         }
 
         return slots;
+    }
+
+    // Compute time slots for a specific date by merging all applicable timeblocks
+    function timeSlotsForDate(dateStr: string): { label: string; minutes: number }[] {
+        if (!event) return [];
+
+        const applicableBlocks = event.timeBlocks.filter(b => b.days.includes(dateStr));
+        if (applicableBlocks.length === 0) return [];
+
+        const allMinutes = new Set<number>();
+        for (const block of applicableBlocks) {
+            const slots = generateSlotsForRange(block.startTime, block.endTime, event.timeGranularityMinutes);
+            for (const s of slots) allMinutes.add(s.minutes);
+        }
+
+        const sorted = [...allMinutes].sort((a, b) => a - b);
+        return sorted.map(m => {
+            const h = Math.floor(m / 60);
+            const min = m % 60;
+            const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+            const ampm = h < 12 ? "AM" : "PM";
+            return { label: `${hour12}:${String(min).padStart(2, "0")} ${ampm}`, minutes: m };
+        });
+    }
+
+    // Union of all time slots across all dates (for desktop grid rows)
+    let allTimeSlots = $derived.by(() => {
+        if (!event) return [];
+        const allMinutes = new Set<number>();
+        for (const dateStr of event.candidateDates) {
+            for (const slot of timeSlotsForDate(dateStr)) {
+                allMinutes.add(slot.minutes);
+            }
+        }
+        const sorted = [...allMinutes].sort((a, b) => a - b);
+        return sorted.map(m => {
+            const h = Math.floor(m / 60);
+            const min = m % 60;
+            const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+            const ampm = h < 12 ? "AM" : "PM";
+            return { label: `${hour12}:${String(min).padStart(2, "0")} ${ampm}`, minutes: m };
+        });
     });
+
+    // Check if a date has a specific time slot
+    function dateHasSlotAt(dateStr: string, minutes: number): boolean {
+        return timeSlotsForDate(dateStr).some(s => s.minutes === minutes);
+    }
 
     // Generate slot key from date and time
     function getSlotKey(dateStr: string, minutes: number): string {
@@ -237,7 +285,7 @@
     function selectAllDay(dateStr: string) {
         pushUndo();
         const newSlots = new Map(mySlots);
-        for (const slot of timeSlots) {
+        for (const slot of timeSlotsForDate(dateStr)) {
             const key = getSlotKey(dateStr, slot.minutes);
             newSlots.set(key, "available");
         }
@@ -248,7 +296,7 @@
     function clearDay(dateStr: string) {
         pushUndo();
         const newSlots = new Map(mySlots);
-        for (const slot of timeSlots) {
+        for (const slot of timeSlotsForDate(dateStr)) {
             const key = getSlotKey(dateStr, slot.minutes);
             newSlots.delete(key);
         }
@@ -262,23 +310,28 @@
         const newSlots = new Map(mySlots);
 
         // Get slots for the source day
-        const sourceSlots = timeSlots
+        const fromSlots = timeSlotsForDate(fromDateStr);
+        const sourceSlots = fromSlots
             .map((slot) => ({
                 minutes: slot.minutes,
                 status: mySlots.get(getSlotKey(fromDateStr, slot.minutes)),
             }))
             .filter((s) => s.status);
 
-        // Apply to all other days
+        // Apply to all other days (only slots that exist on target day)
         for (const dateStr of event.candidateDates) {
             if (dateStr === fromDateStr) continue;
+            const targetSlots = timeSlotsForDate(dateStr);
+            const targetMinutes = new Set(targetSlots.map(s => s.minutes));
             // Clear existing
-            for (const slot of timeSlots) {
+            for (const slot of targetSlots) {
                 newSlots.delete(getSlotKey(dateStr, slot.minutes));
             }
-            // Copy from source
+            // Copy from source (only overlapping slots)
             for (const s of sourceSlots) {
-                newSlots.set(getSlotKey(dateStr, s.minutes), s.status!);
+                if (targetMinutes.has(s.minutes)) {
+                    newSlots.set(getSlotKey(dateStr, s.minutes), s.status!);
+                }
             }
         }
 
@@ -406,7 +459,7 @@
         }[] = [];
 
         for (const dateStr of event.candidateDates) {
-            for (const slot of timeSlots) {
+            for (const slot of timeSlotsForDate(dateStr)) {
                 const { available, maybe } = getSlotParticipants(
                     dateStr,
                     slot.minutes,
@@ -493,7 +546,7 @@
 
     // Day has selections indicator
     function dayHasSlots(dateStr: string): boolean {
-        return timeSlots.some((slot) =>
+        return timeSlotsForDate(dateStr).some((slot) =>
             mySlots.has(getSlotKey(dateStr, slot.minutes)),
         );
     }
@@ -756,7 +809,7 @@
 
                         <!-- Mobile slot list -->
                         <div class="slot-list">
-                            {#each timeSlots as slot}
+                            {#each timeSlotsForDate(currentDate) as slot}
                                 {@const key = getSlotKey(
                                     currentDate,
                                     slot.minutes,
@@ -818,12 +871,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {#each timeSlots as slot}
+                                        {#each allTimeSlots as slot}
                                             <tr>
                                                 <td class="time-label"
                                                     >{slot.label}</td
                                                 >
                                                 {#each event.candidateDates as dateStr}
+                                                    {#if dateHasSlotAt(dateStr, slot.minutes)}
                                                     {@const key = getSlotKey(
                                                         dateStr,
                                                         slot.minutes,
@@ -881,6 +935,9 @@
                                                             >
                                                         {/if}
                                                     </td>
+                                                    {:else}
+                                                    <td class="grid-cell disabled na-cell" role="gridcell"></td>
+                                                    {/if}
                                                 {/each}
                                             </tr>
                                         {/each}
@@ -978,7 +1035,7 @@
                                 </div>
 
                                 <div class="slot-list">
-                                    {#each timeSlots as slot}
+                                    {#each timeSlotsForDate(currentDate) as slot}
                                         {@const count = getSlotCount(
                                             currentDate,
                                             slot.minutes,
@@ -1045,12 +1102,13 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {#each timeSlots as slot}
+                                            {#each allTimeSlots as slot}
                                                 <tr>
                                                     <td class="time-label"
                                                         >{slot.label}</td
                                                     >
                                                     {#each event.candidateDates as dateStr}
+                                                        {#if dateHasSlotAt(dateStr, slot.minutes)}
                                                         {@const count =
                                                             getSlotCount(
                                                                 dateStr,
@@ -1079,6 +1137,9 @@
                                                                 >
                                                             {/if}
                                                         </td>
+                                                        {:else}
+                                                        <td class="grid-cell heatmap-cell disabled na-cell" role="gridcell"></td>
+                                                        {/if}
                                                     {/each}
                                                 </tr>
                                             {/each}

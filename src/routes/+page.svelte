@@ -4,12 +4,20 @@
     import { detectTimezone } from "$lib/utils/timezone";
     import { t } from "$lib/i18n";
 
+    // TimeBlock local type
+    type TimeBlock = {
+        startTime: string;
+        endTime: string;
+        days: string[];
+    };
+
     // Form state
     let title = $state("");
     let description = $state("");
     let selectedDates = $state<string[]>([]);
-    let startTime = $state("09:00");
-    let endTime = $state("17:00");
+    let timeBlocks = $state<TimeBlock[]>([
+        { startTime: "09:00", endTime: "17:00", days: [] },
+    ]);
     let granularity = $state(15);
     let timezone = $state("");
     let password = $state("");
@@ -25,12 +33,103 @@
         timezone = detectTimezone();
     });
 
+    // When selectedDates changes, auto-assign new dates to first block
+    // and remove stale dates from all blocks
+    $effect(() => {
+        const dateSet = new Set(selectedDates);
+        // Remove stale dates
+        for (const block of timeBlocks) {
+            block.days = block.days.filter((d) => dateSet.has(d));
+        }
+        // Any new dates not in any block go to the first block
+        const assignedDates = new Set(timeBlocks.flatMap((b) => b.days));
+        const unassigned = selectedDates.filter(
+            (d) => !assignedDates.has(d),
+        );
+        if (unassigned.length > 0 && timeBlocks.length > 0) {
+            timeBlocks[0].days = [
+                ...new Set([...timeBlocks[0].days, ...unassigned]),
+            ].sort();
+        }
+    });
+
+    // Helper: get weekday label for a date string
+    function getWeekdayShort(dateStr: string): string {
+        const d = new Date(dateStr + "T12:00:00");
+        return d.toLocaleDateString("en-US", { weekday: "short" });
+    }
+
+    // Helper: format date for chip display
+    function formatDateChip(dateStr: string): string {
+        const d = new Date(dateStr + "T12:00:00");
+        return d.toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+        });
+    }
+
+    // Check if all dates are covered by at least one block
+    let allDatesCovered = $derived(
+        selectedDates.length === 0 ||
+            selectedDates.every((d) =>
+                timeBlocks.some((b) => b.days.includes(d)),
+            ),
+    );
+
     // Validation
     let isValid = $derived(
         title.trim().length > 0 &&
             selectedDates.length > 0 &&
-            startTime < endTime,
+            timeBlocks.length > 0 &&
+            timeBlocks.every(
+                (b) =>
+                    b.startTime < b.endTime && b.days.length > 0,
+            ) &&
+            allDatesCovered,
     );
+
+    function addTimeBlock() {
+        timeBlocks = [
+            ...timeBlocks,
+            { startTime: "09:00", endTime: "17:00", days: [] },
+        ];
+    }
+
+    function removeTimeBlock(index: number) {
+        if (timeBlocks.length <= 1) return;
+        const removed = timeBlocks[index];
+        const remaining = timeBlocks.filter((_, i) => i !== index);
+        // Move orphaned days to the first remaining block
+        const remainingDays = new Set(remaining.flatMap((b) => b.days));
+        const orphans = removed.days.filter((d) => !remainingDays.has(d));
+        if (orphans.length > 0) {
+            remaining[0].days = [
+                ...new Set([...remaining[0].days, ...orphans]),
+            ].sort();
+        }
+        timeBlocks = remaining;
+    }
+
+    function toggleDayInBlock(blockIndex: number, dateStr: string) {
+        const block = timeBlocks[blockIndex];
+        if (block.days.includes(dateStr)) {
+            block.days = block.days.filter((d) => d !== dateStr);
+        } else {
+            block.days = [...block.days, dateStr].sort();
+        }
+        timeBlocks = [...timeBlocks]; // trigger reactivity
+    }
+
+    function selectAllDaysInBlock(blockIndex: number) {
+        timeBlocks[blockIndex].days = [...selectedDates];
+        timeBlocks = [...timeBlocks];
+    }
+
+    function clearDaysInBlock(blockIndex: number) {
+        timeBlocks[blockIndex].days = [];
+        timeBlocks = [...timeBlocks];
+    }
 
     async function handleSubmit() {
         if (!isValid || submitting) return;
@@ -46,8 +145,7 @@
                     title: title.trim(),
                     description: description.trim() || null,
                     candidateDates: selectedDates,
-                    startTime,
-                    endTime,
+                    timeBlocks,
                     timeGranularityMinutes: granularity,
                     timezone,
                     password: password || null,
@@ -131,22 +229,119 @@
             </div>
         </div>
 
-        <!-- Time window -->
+        <!-- Time ranges -->
         <div class="form-group">
-            <span class="label">{t("event.create.timeWindowLabel")}</span>
-            <div class="time-row">
-                <TimePicker
-                    bind:value={startTime}
-                    label={t("event.create.startTimeLabel")}
-                    id="start-time"
-                />
-                <span class="time-separator">to</span>
-                <TimePicker
-                    bind:value={endTime}
-                    label={t("event.create.endTimeLabel")}
-                    id="end-time"
-                />
+            <span class="label">{t("event.create.timeBlocksLabel")}</span>
+            <p class="form-hint">{t("event.create.timeBlocksHint")}</p>
+
+            <div class="timeblocks-list">
+                {#each timeBlocks as block, i}
+                    <div class="timeblock-card card">
+                        <div class="timeblock-header">
+                            <span class="timeblock-title"
+                                >{t("event.create.timeRangeTitle")} {timeBlocks.length >
+                                1
+                                    ? i + 1
+                                    : ""}</span
+                            >
+                            {#if timeBlocks.length > 1}
+                                <button
+                                    type="button"
+                                    class="btn btn-ghost btn-sm btn-danger"
+                                    onclick={() => removeTimeBlock(i)}
+                                >
+                                    {t("event.create.removeTimeRange")}
+                                </button>
+                            {/if}
+                        </div>
+
+                        <div class="time-row">
+                            <TimePicker
+                                bind:value={block.startTime}
+                                label={t("event.create.startTimeLabel")}
+                                id="start-time-{i}"
+                            />
+                            <span class="time-separator">to</span>
+                            <TimePicker
+                                bind:value={block.endTime}
+                                label={t("event.create.endTimeLabel")}
+                                id="end-time-{i}"
+                            />
+                        </div>
+
+                        {#if block.startTime >= block.endTime}
+                            <p class="field-error">End time must be after start time</p>
+                        {/if}
+
+                        <!-- Day assignment chips -->
+                        {#if selectedDates.length > 0}
+                            <div class="day-assignment">
+                                <div class="day-assignment-header">
+                                    <span class="day-assignment-label"
+                                        >{t("event.create.daysForBlock")}</span
+                                    >
+                                    <div class="day-assignment-actions">
+                                        <button
+                                            type="button"
+                                            class="btn btn-ghost btn-xs"
+                                            onclick={() =>
+                                                selectAllDaysInBlock(i)}
+                                        >
+                                            {t("event.create.allDays")}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-ghost btn-xs"
+                                            onclick={() =>
+                                                clearDaysInBlock(i)}
+                                        >
+                                            Clear
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="day-chips">
+                                    {#each selectedDates as dateStr}
+                                        <button
+                                            type="button"
+                                            class="day-chip"
+                                            class:selected={block.days.includes(
+                                                dateStr,
+                                            )}
+                                            onclick={() =>
+                                                toggleDayInBlock(i, dateStr)}
+                                            title={formatDateChip(dateStr)}
+                                        >
+                                            <span class="day-chip-weekday"
+                                                >{getWeekdayShort(
+                                                    dateStr,
+                                                )}</span
+                                            >
+                                            <span class="day-chip-date"
+                                                >{new Date(dateStr + "T12:00:00").getDate()}</span
+                                            >
+                                        </button>
+                                    {/each}
+                                </div>
+                                {#if block.days.length === 0}
+                                    <p class="field-error">Select at least one day</p>
+                                {/if}
+                            </div>
+                        {/if}
+                    </div>
+                {/each}
+
+                <button
+                    type="button"
+                    class="btn btn-ghost add-timeblock-btn"
+                    onclick={addTimeBlock}
+                >
+                    {t("event.create.addTimeRange")}
+                </button>
             </div>
+
+            {#if !allDatesCovered && selectedDates.length > 0}
+                <p class="field-error">{t("event.create.uncoveredDatesWarning")}</p>
+            {/if}
         </div>
 
         <!-- Granularity -->
@@ -274,6 +469,32 @@
         padding: 1rem;
     }
 
+    /* Timeblocks */
+    .timeblocks-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .timeblock-card {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .timeblock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .timeblock-title {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--fg-primary);
+    }
+
     .time-row {
         display: flex;
         align-items: flex-end;
@@ -288,6 +509,108 @@
         padding-bottom: 0.75rem;
         color: var(--fg-muted);
         font-size: 0.875rem;
+    }
+
+    /* Day assignment */
+    .day-assignment {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .day-assignment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .day-assignment-label {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--fg-secondary);
+    }
+
+    .day-assignment-actions {
+        display: flex;
+        gap: 0.25rem;
+    }
+
+    .day-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+    }
+
+    .day-chip {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.375rem 0.5rem;
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-md);
+        background: transparent;
+        color: var(--fg-secondary);
+        font-family: inherit;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        min-width: 44px;
+        gap: 0.125rem;
+    }
+
+    .day-chip:hover {
+        background-color: var(--bg-hover);
+    }
+
+    .day-chip.selected {
+        background-color: var(--interactive);
+        color: var(--bg-primary);
+        border-color: var(--interactive);
+    }
+
+    .day-chip-weekday {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .day-chip-date {
+        font-size: 0.8125rem;
+        font-weight: 500;
+    }
+
+    .field-error {
+        font-size: 0.75rem;
+        color: var(--accent-red, #e53e3e);
+        margin-top: 0.25rem;
+    }
+
+    .add-timeblock-btn {
+        width: 100%;
+        border: 1px dashed var(--border-default);
+        border-radius: var(--radius-md);
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        color: var(--fg-muted);
+    }
+
+    .add-timeblock-btn:hover {
+        border-color: var(--interactive);
+        color: var(--interactive);
+    }
+
+    .btn-danger {
+        color: var(--accent-red, #e53e3e);
+    }
+
+    .btn-danger:hover {
+        background-color: rgba(229, 62, 62, 0.1);
+    }
+
+    .btn-xs {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.75rem;
+        min-height: auto;
     }
 
     .granularity-pills {

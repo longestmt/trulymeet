@@ -15,6 +15,13 @@ export const GET: RequestHandler = async ({ params }) => {
         return json({ error: 'not_found', message: 'Event not found.' }, { status: 404 });
     }
 
+    // Synthesize timeBlocks for legacy events
+    const timeBlocks = event.timeBlocks ?? [{
+        startTime: event.startTime,
+        endTime: event.endTime,
+        days: event.candidateDates as string[]
+    }];
+
     // Don't expose sensitive fields
     return json({
         slug: event.slug,
@@ -25,6 +32,7 @@ export const GET: RequestHandler = async ({ params }) => {
         candidateDates: event.candidateDates,
         startTime: event.startTime,
         endTime: event.endTime,
+        timeBlocks,
         allowMaybe: event.allowMaybe,
         locked: event.locked,
         hasPassword: !!event.passwordHash,

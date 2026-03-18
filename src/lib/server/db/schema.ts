@@ -1,4 +1,11 @@
-import { pgTable, uuid, varchar, text, integer, boolean, timestamp, time, date, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, integer, boolean, timestamp, time, date, pgEnum, jsonb } from 'drizzle-orm/pg-core';
+
+// TimeBlock type for multiple time ranges per event
+export type TimeBlock = {
+	startTime: string;  // "HH:MM"
+	endTime: string;    // "HH:MM"
+	days: string[];     // ["2026-03-20", "2026-03-22", ...]
+};
 
 // Availability status enum
 export const availabilityStatusEnum = pgEnum('availability_status', ['available', 'maybe']);
@@ -16,6 +23,7 @@ export const events = pgTable('events', {
 	candidateDates: date('candidate_dates', { mode: 'string' }).array().notNull(),
 	startTime: time('start_time').notNull().default('09:00'),
 	endTime: time('end_time').notNull().default('17:00'),
+	timeBlocks: jsonb('time_blocks').$type<TimeBlock[]>(),
 	allowMaybe: boolean('allow_maybe').notNull().default(false),
 	locked: boolean('locked').notNull().default(false),
 	createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
